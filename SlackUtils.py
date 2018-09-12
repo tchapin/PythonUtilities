@@ -41,8 +41,8 @@ def post_slack_message(channel, text):
         text: string
             the message to post
     return value: dictionary
-        success: Boolean
-        messages: List of strings
+        success: boolean
+        messages: list of string
     """
 
     ret_dict = {"messages": []}

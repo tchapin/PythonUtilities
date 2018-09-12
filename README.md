@@ -7,3 +7,4 @@ Example:
     "password": "passw0rd"
 }
 ```  
+Wherever you see `CONFIG.get("key", "")`, make sure that key exists in the config.json file.  
