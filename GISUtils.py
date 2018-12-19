@@ -15,6 +15,7 @@ Created:        9/17/2018
 
 import arcpy
 import csv
+import datetime
 import json
 import os
 import requests
@@ -233,6 +234,38 @@ def get_domain(gdb, domain_name):
         return None
     finally:
         return ret_val
+
+
+def get_prior_date(this_date, day_of_week):
+    """
+    purpose:
+        Get the date of a day of the week prior to a given date.
+        If the date provided is on the same day of the week as the requested
+        day, the prior week will be returned.
+    arguments:
+        this_date: datetime.date
+            date prior to which the date will be returned
+        day_of_week: int
+            Monday is 0, Sunday is 6
+    return value: datetime.date
+        the datetime.date of the day_of_week before this_date
+        returns None if error
+    """
+
+    try:
+        if day_of_week not in range(0, 7):
+            raise Exception()
+        ret_date = this_date
+        this_day = this_date.weekday()
+        if this_day > day_of_week:
+            # if this_day is ahead of the day of week, subtract the number of days it's ahead
+            ret_date -= datetime.timedelta(days=(this_day - day_of_week))
+        else:
+            # if this_day is on or behind the day of week, subtract a week minus the number days it's behind
+            ret_date -= datetime.timedelta(days=(7 - (day_of_week - this_day)))
+        return ret_date
+    except Exception:
+        return None
 
 
 def get_station(point, lines):
