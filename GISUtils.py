@@ -255,14 +255,13 @@ def get_prior_date(this_date, day_of_week):
     try:
         if day_of_week not in range(0, 7):
             raise Exception()
-        ret_date = this_date
         this_day = this_date.weekday()
         if this_day > day_of_week:
             # if this_day is ahead of the day of week, subtract the number of days it's ahead
-            ret_date -= datetime.timedelta(days=(this_day - day_of_week))
+            ret_date = this_date - datetime.timedelta(days=(this_day - day_of_week))
         else:
             # if this_day is on or behind the day of week, subtract a week minus the number days it's behind
-            ret_date -= datetime.timedelta(days=(7 - (day_of_week - this_day)))
+            ret_date = this_date - datetime.timedelta(days=(7 - (day_of_week - this_day)))
         return ret_date
     except Exception:
         return None
