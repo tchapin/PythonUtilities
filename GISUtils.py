@@ -92,7 +92,7 @@ def export_table_to_csv(input_table, output_file, field_names=["*"], include_hea
         # get all the fields if ["*"] was specified
         if len(field_names) == 1 and field_names[0] == "*":
             field_names = [fld.name for fld in arcpy.ListFields(input_table)]
-        with open(output_file, 'wb') as csvfile:
+        with open(output_file, "w", newline="") as csvfile:
             csvwriter = csv.writer(csvfile)
             # write the header row
             if include_header is True:
