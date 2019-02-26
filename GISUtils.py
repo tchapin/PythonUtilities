@@ -102,7 +102,7 @@ def export_table_to_csv(input_table, output_file, field_names=["*"], include_hea
                 csvwriter.writerow(row)
         ret_dict["success"] = True
     except Exception as e:
-        ret_dict["messages"].append(e.message)
+        ret_dict["messages"].append(str(e))
         ret_dict["success"] = False
     finally:
         return ret_dict

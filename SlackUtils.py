@@ -67,7 +67,7 @@ def post_slack_message(channel, text):
             ret_dict["messages"].append("Error posting message: {0}".format(resp.content))
             ret_dict["success"] = False
     except Exception as e:
-        ret_dict["messages"].append(e.message)
+        ret_dict["messages"].append(str(e))
         ret_dict["success"] = False
     finally:
         return ret_dict
@@ -117,7 +117,7 @@ def post_slack_file(channel, file_path, title="", initial_comment=""):
             ret_dict["messages"].append("Error posting file: {0}".format(resp.content))
             ret_dict["success"] = False
     except Exception as e:
-        ret_dict["messages"].append(e.message)
+        ret_dict["messages"].append(str(e))
         ret_dict["success"] = False
     finally:
         return ret_dict

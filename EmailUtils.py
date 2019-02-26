@@ -94,7 +94,7 @@ def send_email(to_list, cc_list, subject, body, files=[]):
             ret_dict["success"] = False
     except Exception as e:
         SlackUtils.post_slack_message(CONFIG.get("slack_notification_user", ""), "Error in SendEmail. Subject = {0}. Error = {1}".format(subject, e))
-        ret_dict["messages"].append(e.message)
+        ret_dict["messages"].append(str(e))
         ret_dict["success"] = False
     finally:
         return ret_dict

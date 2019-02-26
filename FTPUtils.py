@@ -77,7 +77,7 @@ def get_file(host, username, password, ftp_folder, file_name, destination_folder
             ftp.retrbinary("RETR {0}".format(file_name), f.write)
         ret_dict["success"] = True
     except Exception as e:
-        ret_dict["messages"].append(e.message)
+        ret_dict["messages"].append(str(e))
         ret_dict["success"] = False
     finally:
         return ret_dict
@@ -113,7 +113,7 @@ def get_folder_tree(host, username, password, ftp_folder, destination_folder):
 
         ret_dict["success"] = True
     except Exception as e:
-        ret_dict["messages"].append(e.message)
+        ret_dict["messages"].append(str(e))
         ret_dict["success"] = False
     finally:
         return ret_dict
@@ -146,7 +146,7 @@ def list_items(host, username, password, folder):
         ret_dict["items"] = ftp.nlst()
         ret_dict["success"] = True
     except Exception as e:
-        ret_dict["messages"].append(e.message)
+        ret_dict["messages"].append(str(e))
         ret_dict["success"] = False
     finally:
         return ret_dict
@@ -178,7 +178,7 @@ def put_file(host, username, password, local_file, ftp_folder):
         ftp.storbinary("STOR {0}".format(os.path.basename(local_file)), open(local_file, "rb"))
         ret_dict["success"] = True
     except Exception as e:
-        ret_dict["messages"].append(e.message)
+        ret_dict["messages"].append(str(e))
         ret_dict["success"] = False
     finally:
         return ret_dict
