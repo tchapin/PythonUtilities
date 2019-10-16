@@ -102,6 +102,9 @@ def is_string(arg):
     return value: Boolean
     """
 
+    if arg is None:
+        return False
+
     try:
         str(arg)
         return True
