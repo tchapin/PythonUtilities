@@ -17,6 +17,7 @@ import arcpy
 import csv
 import datetime
 import json
+import math
 import os
 import requests
 import TypeUtils
@@ -63,6 +64,47 @@ def add_message(message, message_type="message", run_method="script"):
             arcpy.AddWarning(message)
         elif message_type == "error":
             arcpy.AddError(message)
+
+
+def create_rectangle(x_cen, y_cen, width, height, angle=0, clockwise=True):
+    """
+    purpose:
+        Create an arcpy.Polygon from the corner coordinates, optionally rotated
+    arguments:
+        x_cen: number
+            center x coordinate of the rectangle
+        y_cen: number
+            center y coordinate of the rectangle
+        width: number
+            width of the rectangle
+        height: number
+            height of the rectangle
+        angle: number
+            angle between the original point and the new point using the pivot point as the vertex of the angle
+            0-360
+            positive numbers for clockwise
+            negative numbers for counter-clockwise
+    return value: arcpy.Polygon
+        if error, None
+    """
+
+    try:
+        array = arcpy.Array()
+        # lower-left
+        coords_ll = rotate_xy(x_cen - (width / float(2)), y_cen - (height / float(2)), x_cen, y_cen, angle, True)
+        array.add(arcpy.Point(coords_ll[0], coords_ll[1]))
+        # upper-left
+        coords_ul = rotate_xy(x_cen - (width / float(2)), y_cen + (height / float(2)), x_cen, y_cen, angle, True)
+        array.add(arcpy.Point(coords_ul[0], coords_ul[1]))
+        # upper-right
+        coords_ur = rotate_xy(x_cen + (width / float(2)), y_cen + (height / float(2)), x_cen, y_cen, angle, True)
+        array.add(arcpy.Point(coords_ur[0], coords_ur[1]))
+        # lower-right
+        coords_lr = rotate_xy(x_cen + (width / float(2)), y_cen - (height / float(2)), x_cen, y_cen, angle, True)
+        array.add(arcpy.Point(coords_lr[0], coords_lr[1]))
+        return arcpy.Polygon(array)
+    except Exception:
+        return None
 
 
 def export_table_to_csv(input_table, output_file, field_names=["*"], include_header=True):
@@ -304,6 +346,47 @@ def get_station(point, lines):
             return None
     except Exception:
         return None
+
+
+def rotate_xy(x_orig, y_orig, x_pivot=0, y_pivot=0, angle=0):
+    """
+    purpose:
+        Rotate an xy coordinate around a specified origin
+    arguments:
+        x_orig: number
+            x coordinate of original point
+        y_orig: number
+            y coordinate of original point
+        x_pivot: number
+            x coordinate of pivot point
+        y_pivot: number
+            y coordinate of pivot point
+        angle: number
+            angle between the original point and the new point using the pivot point as the vertex of the angle
+            0-360
+            positive numbers for clockwise
+            negative numbers for counter-clockwise
+    return value: tuple
+        x_rotated, y_rotated
+        if error: None, None
+    """
+
+    try:
+        x_orig_delta = x_orig - x_pivot
+        y_orig_delta = y_orig - y_pivot
+        angle = angle * -1
+        # convert angle to radians
+        angle = math.radians(angle)
+        # get the deltas from the center point to the rotated point
+        x_rot_delta = (x_orig_delta * math.cos(angle)) - (y_orig_delta * math.sin(angle))
+        y_rot_delta = (x_orig_delta * math.sin(angle)) + (y_orig_delta * math.cos(angle))
+        # get the rotated point coords
+        x_rot = x_pivot + x_rot_delta
+        y_rot = y_pivot + y_rot_delta
+        # return a tuple of rotated coords
+        return x_rot, y_rot
+    except Exception:
+        return None, None
 
 
 if __name__ == '__main__':
