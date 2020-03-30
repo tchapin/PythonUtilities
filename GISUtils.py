@@ -66,6 +66,49 @@ def add_message(message, message_type="message", run_method="script"):
             arcpy.AddError(message)
 
 
+def calc_dist(point1, point2):
+    """
+    purpose:
+        Calculate the distance between 2 points
+        Compute both 2D and 3D distance (if z coordinates are provided)
+    arguments:
+        point1: tuple of float
+            (x1, y1) or (x1, y2, z1)
+        point2: tuple of float
+            (x2, y2) or (x2, y2, z2)
+    return value: dictionary
+        success: boolean
+        distance2D: float
+            will only have a value if success == True
+        distance3D: float
+            will only have a value if success == True and
+            z values were provided in the coordinate tuples
+        messages: list
+    """
+
+    ret_dict = {"messages": [], "distance2D": None, "distance3D": None}
+    try:
+        if len(point1) >= 2 and len(point2) >= 2:
+            x1 = point1[0]
+            y1 = point1[1]
+            x2 = point2[0]
+            y2 = point2[1]
+            distance2D = math.sqrt((math.pow(x2 - x1, 2)) + (math.pow(y2 - y1, 2)))
+            ret_dict["distance2D"] = distance2D
+        if len(point1) == 3 and len(point2) == 3:
+            z1 = point1[2]
+            z2 = point2[2]
+            distance3D = math.sqrt((math.pow(x2 - x1, 2)) + (math.pow(y2 - y1, 2)) + (math.pow(z2 - z1, 2)))
+            ret_dict["distance3D"] = distance3D
+        ret_dict["success"] = True
+    except Exception as e:
+        ret_dict["messages"].append("Error: {0}".format(str(e)))
+        ret_dict["success"] = False
+    finally:
+        return ret_dict
+    return
+
+
 def create_rectangle(x_cen, y_cen, width, height, angle=0, clockwise=True):
     """
     purpose:
