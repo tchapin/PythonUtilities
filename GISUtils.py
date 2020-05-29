@@ -66,6 +66,85 @@ def add_message(message, message_type="message", run_method="script"):
             arcpy.AddError(message)
 
 
+def calc_coords(starting_point, distance, h_angle, v_angle):
+    """
+    purpose:
+        Calculate coordinates given a starting point, distance, horizontal angle, and vertical angle
+    arguments:
+        starting_point: tuple of float
+            (x, y, z) coordinates of the starting point
+        distance: float
+            3D distance to the new point
+        h_angle: float
+            Horizontal angle, counter clockwise from east
+            0 <= horiz_angle < 360
+        v_angle: float
+            Vertical angle, 180 degrees from zenith to nadir
+            Horizon is 90
+            0 <= vert_angle <= 180
+    return value: dictionary
+        success: boolean
+        coords: tuple
+            (x, y, z) coordinates of the new point
+        messages: list
+    """
+
+    ret_dict = {"messages": [], "coords": ()}
+    try:
+        # validate starting_point
+        if len(starting_point) != 3:
+            ret_dict["messages"].append("Error in calc_coords: starting_point does not have 3 items")
+            ret_dict["success"] = False
+            return
+        # validate distance
+        if TypeUtils.is_numeric(distance):
+            if distance <= 0:
+                ret_dict["messages"].append("Error in calc_coords: distance must be > 0")
+                ret_dict["success"] = False
+                return
+        else:
+            ret_dict["messages"].append("Error in calc_coords: distance must be a number")
+            ret_dict["success"] = False
+            return
+        # validate h_angle
+        if TypeUtils.is_numeric(distance):
+            if not 0 <= h_angle < 360:
+                ret_dict["messages"].append("Error in calc_coords: horizontal angle much be between 0 and 360")
+                ret_dict["success"] = False
+                return
+        else:
+            ret_dict["messages"].append("Error in calc_coords: horizontal angle must be a number")
+            ret_dict["success"] = False
+            return
+        # validate v_angle
+        if TypeUtils.is_numeric(distance):
+            if not 0 <= h_angle <= 180:
+                ret_dict["messages"].append("Error in calc_coords: vertical angle much be between 0 and 180")
+                ret_dict["success"] = False
+                return
+        else:
+            ret_dict["messages"].append("Error in calc_coords: vertical angle must be a number")
+            ret_dict["success"] = False
+            return
+        # get the starting coordinates
+        x1 = starting_point[0]
+        y1 = starting_point[1]
+        z1 = starting_point[2]
+        # compute the new coordinates
+        x2 = x1 + (distance * math.sin(math.radians(v_angle)) * math.cos(math.radians(h_angle)))
+        y2 = y1 + (distance * math.sin(math.radians(v_angle)) * math.sin(math.radians(h_angle)))
+        z2 = z1 + (distance * math.cos(math.radians(v_angle)))
+        # return the new point
+        ret_dict["coords"] = (x2, y2, z2)
+        ret_dict["success"] = True
+    except Exception as e:
+        ret_dict["messages"].append("Error: {0}".format(str(e)))
+        ret_dict["success"] = False
+    finally:
+        return ret_dict
+    return
+
+
 def calc_dist(point1, point2):
     """
     purpose:
